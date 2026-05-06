@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+     
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  
+  - task: Checkout@1
+    displayName: 'Checkout source code'
+
+
+  - task: UseJavaVersion@1
+    inputs:
+      versionSpec: '17'
+      jdkArchitecture: 'x64'
+    displayName: 'Set up Java 17'
+  - task: Maven@4
+  
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean test'
+      options: '-Dgroups=regression'  # For TestNG groups OR use surefire includes
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/*.xml'
+      javaHomeOption: 'JDKVersion'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+    displayName: 'Run Maven Regression Tests'
+
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/surefire-reports/*.xml'
+      testRunTitle: 'Regression Test Results'
+    condition: succeededOrFailed()
