@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - main  # Run pipeline on main branch commits
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  # Step 1: Checkout code
+  - task: Checkout@1
+    displayName: 'Checkout source code'
+
+  # Step 2: Set up Java
+  - task: UseJavaVersion@1
+    inputs:
+      versionSpec: '17'
+      jdkArchitecture: 'x64'
+    displayName: 'Set up Java 17'
+
+  # Step 3: Run Maven regression tests
+  - task: Maven@4
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean test'
+      options: '-Dgroups=regression'  # For TestNG groups OR use surefire includes
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/*.xml'
+      javaHomeOption: 'JDKVersion'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+    displayName: 'Run Maven Regression Tests'
+
+  # Step 4: Publish test results
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/surefire-reports/*.xml'
+      testRunTitle: 'Regression Test Results'
+    condition: succeededOrFailed()

@@ -1,0 +1,26 @@
+<dependencies>
+    <!-- JUnit 5 Example -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.10.0</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+<build>
+    <plugins>
+        <!-- Maven Surefire Plugin for running unit/regression tests -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.5</version>
+            <configuration>
+                <!-- Run only regression tests if tagged -->
+                <includes>
+                    <include>**/*RegressionTest.java</include>
+                </includes>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
